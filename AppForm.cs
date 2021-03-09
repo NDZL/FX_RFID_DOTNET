@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -33,7 +34,9 @@ namespace CS_RFID3_Host_Sample1
         private TagData m_ReadTag = null;
         private Hashtable m_TagTable;
         private uint m_TagTotalCount;
-        
+
+        StringBuilder sbLog = new StringBuilder();
+
         internal class AccessOperationResult
         {
             public RFIDResults m_Result;
@@ -111,6 +114,7 @@ namespace CS_RFID3_Host_Sample1
             }
         }
 
+
         private void myUpdateRead(Events.ReadEventData eventData)
         {
             int index = 0;
@@ -128,6 +132,9 @@ namespace CS_RFID3_Host_Sample1
                         Symbol.RFID3.TagData tag = tagData[nIndex];
                         string tagID = tag.TagID;
                         bool isFound = false;
+
+                        sbLog.AppendLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.fff") + "|"+tag.TagID + "|" + tag.AntennaID + "|" + tag.PeakRSSI);
+
 
                         lock (m_TagTable.SyncRoot)
                         {
@@ -699,6 +706,9 @@ namespace CS_RFID3_Host_Sample1
                         {
                             m_ReaderAPI.Actions.Inventory.Stop();
                         }
+
+
+                        File.AppendAllText(".\\FX_log.txt", sbLog.ToString());
 
                         readButton.Text = "Start Reading";
                     }                    
